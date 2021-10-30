@@ -12,7 +12,7 @@ export default function Header() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 0.15,
+    flex: 0.1,
     fontSize: 50,
     backgroundColor: "#00ff00",
     // alignItems: "center",
