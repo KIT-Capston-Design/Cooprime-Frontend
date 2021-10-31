@@ -1,7 +1,9 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, TouchableOpacity, Text } from "react-native";
+import { Feather } from "@expo/vector-icons";
 
 export default function GroupCall({ navigation }) {
+  const iconSize = 30;
   const disconnect = () => {
     navigation.navigate("Calling");
     console.log("disconnect");
@@ -9,21 +11,20 @@ export default function GroupCall({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.callSetting}>
-        <TouchableOpacity style={styles.muteBtn} onPress={muteSound}>
-          <Octicons name="mute" size={iconSize} color="black" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.videoOffBtn} onPress={videoOff}>
-          <Feather name="video" size={iconSize} color="black" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.disconnectBtn} onPress={disconnect}>
-          <Feather name="x-circle" size={iconSize} color="black" />
-        </TouchableOpacity>
-      </View>
+      <Text style={{ fontSize: 50 }}>그룹 통화</Text>
+      <TouchableOpacity style={styles.disconnectBtn} onPress={disconnect}>
+        <Feather name="x-circle" size={iconSize} color="black" />
+      </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {},
+  container: {
+    flex: 1,
+    backgroundColor: "#eeeeee",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  disconnectBtn: { backgroundColor: "#0000ff" },
 });
