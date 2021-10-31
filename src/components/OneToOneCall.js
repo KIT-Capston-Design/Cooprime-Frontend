@@ -82,6 +82,17 @@ export default function OneToOneCall({ navigation }) {
 
     // getUserMedia + addStream
     initCall();
+
+    // RTC Code
+    myPeerConnection.onicecandidate((data) => {
+      console.log("sent candidate");
+      socket.emit("ice", data.candidate, roomName);
+    })
+
+    myPeerConnection.onaddstream((data) => {
+      console.log('On Add Stream');
+      setRemoteStream(data.stream);
+    })
   }
     , []);
   const connectPeer = async () => {
