@@ -40,9 +40,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   justTwo: {
-    width: 105,
-    height: 210,
-    borderRadius: 150,
+    width: 150,
+    height: 300,
+    borderRadius: 40,
     backgroundColor: "#ff0000",
     alignItems: "center",
     justifyContent: "center",

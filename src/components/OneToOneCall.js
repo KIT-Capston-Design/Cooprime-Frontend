@@ -12,13 +12,16 @@ import {
   mediaDevices,
   registerGlobals,
 } from "react-native-webrtc";
-const socket = io("http://localhost:3000", { cors: { origin: "*" } });
+const socket = io("http://hyunjin339.iptime.org:3000", {
+  cors: { origin: "*" },
+});
 
 export default function OneToOneCall({ navigation }) {
   const iconSize = 30;
   const [localStream, setLocalStream] = useState({ toURL: () => null });
   const [remoteStream, setRemoteStream] = useState({ toURL: () => null });
   const [isFront, setIsFront] = useState(false);
+  const [room, setRoom] = useState();
   const [myPeerConnection, setMyPeerConnection] = useState(
     //change the config as you need
     new RTCPeerConnection({
@@ -43,13 +46,12 @@ export default function OneToOneCall({ navigation }) {
   };
 
   useEffect(() => {
-    connectPeer();
-
     // Socket Code
     socket.on("matched", async roomName => {
       //룸네임이 본인의 아이디로 시작하면 본인이 시그널링 주도
       if (roomName.match(new RegExp(`^${socket.id}`))) {
         // 방장 역할
+        room = roomName;
         console.log("나는 방장입니다.");
         const offer = await myPeerConnection.createOffer();
         myPeerConnection.setLocalDescription(offer);
@@ -63,7 +65,12 @@ export default function OneToOneCall({ navigation }) {
 
     socket.on("offer", async offer => {
       console.log("received the offer");
-      myPeerConnection.setRemoteDescription(offer);
+      console.log("1");
+      await myPeerConnection.setRemoteDescription(
+        new RTCSessionDescription(offer)
+      );
+
+      console.log("2");
 
       const answer = await myPeerConnection.createAnswer();
       console.log(answer);
@@ -73,9 +80,11 @@ export default function OneToOneCall({ navigation }) {
       console.log("sent the answer");
     });
 
-    socket.on("answer", answer => {
+    socket.on("answer", async answer => {
       console.log("received the answer");
-      myPeerConnection.setRemoteDescription(answer);
+      await myPeerConnection.setRemoteDescription(
+        new RTCSessionDescription(answer)
+      );
     });
 
     socket.on("ice", ice => {
@@ -89,7 +98,7 @@ export default function OneToOneCall({ navigation }) {
     // RTC Code
     myPeerConnection.onicecandidate = data => {
       console.log("sent candidate");
-      socket.emit("ice", data.candidate, roomName);
+      socket.emit("ice", data.candidate, room);
     };
 
     myPeerConnection.onaddstream = data => {
@@ -113,7 +122,8 @@ export default function OneToOneCall({ navigation }) {
   const initCall = async () => {
     console.log("initcall");
     await getMedia();
-    getCamera();
+    await getCamera();
+    connectPeer();
   };
 
   const getCamera = async () => {
@@ -122,11 +132,11 @@ export default function OneToOneCall({ navigation }) {
     // mediaDevices.enumerateDevices().then(source => {
     // console.log(source);
     // });
-    console.log(devices);
+    console.log("devices : ", devices);
     const camera = devices.filter(device => {
       device.kind === "videoinput" && device.facing === "front";
     });
-    console.log(camera);
+    console.log("camera : ", camera);
     // videoSourceId = sourceInfo.deviceId;
   };
 
@@ -144,12 +154,12 @@ export default function OneToOneCall({ navigation }) {
         // optional: videoSourceId ? [{ sourceId: videoSourceId }] : [],
       },
     });
-    console.log("mystream", myStream);
+    console.log("mystream");
     // Got stream!
     setLocalStream(myStream);
 
     // setup stream listening
-    myPeerConnection.addStream(mystream);
+    myPeerConnection.addStream(myStream);
   };
 
   return (
@@ -159,7 +169,6 @@ export default function OneToOneCall({ navigation }) {
           <Text>My Video</Text>
           <RTCView streamURL={localStream.toURL()} style={styles.localVideo} />
         </View>
-
         <View style={styles.remoteVideos}>
           <Text>Friends Video</Text>
           <RTCView
@@ -175,7 +184,7 @@ export default function OneToOneCall({ navigation }) {
           <TouchableOpacity style={styles.videoOffBtn}>
             <Feather name="video" size={iconSize} color="black" />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.disconnectBtn}>
+          <TouchableOpacity style={styles.disconnectBtn} onPress={disconnect}>
             <Feather name="x-circle" size={iconSize} color="black" />
           </TouchableOpacity>
         </View>
