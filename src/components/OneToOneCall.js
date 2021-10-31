@@ -4,20 +4,13 @@ import { Feather, Octicons } from "@expo/vector-icons";
 
 //socket context api
 import SocketContext from "../Contexts/socket";
-
 import { io } from "socket.io-client";
 
 const URL = "http://localhost:3000";
 
 export default function OneToOneCall({ navigation }) {
-	const socket = io(URL);
-
-	function test() {
-		console.log(socket);
-		socket.emit("test", "Helloworld");
-	}
-
 	const iconSize = 30;
+
 	const muteSound = () => {
 		Alert.alert("mute sound?", "Are you sure?", [
 			{ text: "Cancel" },
@@ -27,6 +20,7 @@ export default function OneToOneCall({ navigation }) {
 			},
 		]);
 	};
+
 	const videoOff = () => {
 		Alert.alert("video off?", "Are you sure?", [
 			{ text: "Cancel" },
@@ -36,22 +30,39 @@ export default function OneToOneCall({ navigation }) {
 			},
 		]);
 	};
+
 	const disconnect = () => {
 		/* 피어간 연결 종료 로직 */
 
 		navigation.navigate("Calling");
 		console.log("disconnect");
 	};
+
 	useEffect(() => {
 		connectPeer();
 	}, []);
+
 	const connectPeer = async () => {
 		try {
 			console.log("inside connectPeer method");
+
+			const socket = io(URL);
+			socket.emit("random_one_to_one");
+			socket.on("matched", (roomName) => {
+				//룸네임이 본인의 아이디로 시작하면 본인이 시그널링 주도
+				if (roomName.match(new RegExp(`^${socket.id}`))) {
+					// 방장 역할
+					console.log("나는 방장입니다.");
+				} else {
+					// 방장이 아닌 역할
+					console.log("나는 방장이 아닙니다.");
+				}
+			});
 		} catch (e) {
 			console.log(e);
 		}
 	};
+
 	return (
 		<View style={styles.container}>
 			<View style={styles.videoContainer}>
@@ -68,7 +79,7 @@ export default function OneToOneCall({ navigation }) {
 				</View>
 
 				<View style={styles.callSetting}>
-					<TouchableOpacity style={styles.muteBtn} onPress={test}>
+					<TouchableOpacity style={styles.muteBtn} onPress={muteSound}>
 						<Octicons name="mute" size={iconSize} color="black" />
 					</TouchableOpacity>
 					<TouchableOpacity style={styles.videoOffBtn} onPress={videoOff}>
