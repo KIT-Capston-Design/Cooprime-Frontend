@@ -33,8 +33,8 @@ export default function Calling({ navigation }) {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 0.75,
-    backgroundColor: "#00ffff",
+    flex: 1,
+    backgroundColor: "#eeeeee",
     alignItems: "center",
     justifyContent: "center",
     flexDirection: "row",

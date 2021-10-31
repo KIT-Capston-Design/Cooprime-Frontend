@@ -6,76 +6,74 @@ import BottomBar from "./src/components/layouts/BottomBar";
 import Calling from "./src/components/Calling";
 import OneToOneCall from "./src/components/OneToOneCall";
 import GroupCall from "./src/components/GroupCall";
+import Alarm from "./src/components/Alarm";
+import Chatting from "./src/components/Chatting";
+import Profile from "./src/components/Profile";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
-/* 페이지 전환 Navigation 예제
-function HomeScreen({ navigation }) {
+const HomeTab = createBottomTabNavigator();
+
+function HomeTabs() {
   return (
-    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-      <Text>Home Screen</Text>
-      <Button
-        title="Go to Details"
-        onPress={() => navigation.navigate("Details")}
-      />
-    </View>
+    <HomeTab.Navigator
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused, color, size }) => {
+          let iconName;
+          size = 30;
+          if (route.name === "Calling") {
+            iconName = focused ? "home" : "home-outline";
+          } else if (route.name === "Chatting") {
+            iconName = focused ? "chat" : "chat-outline";
+          } else if (route.name === "Alarm") {
+            iconName = focused ? "bell" : "bell-outline";
+          } else if (route.name === "Profile") {
+            iconName = focused ? "account-box" : "account-box-outline";
+          }
+
+          // You can return any component that you like here!
+          return (
+            <MaterialCommunityIcons name={iconName} size={size} color={color} />
+          );
+        },
+        tabBarActiveTintColor: "black",
+        tabBarInactiveTintColor: "black",
+        headerShown: false,
+        tabBarShowLabel: false,
+      })}
+    >
+      <HomeTab.Screen name="Calling" component={Calling} />
+      <HomeTab.Screen name="Chatting" component={Chatting} />
+      <HomeTab.Screen name="Alarm" component={Alarm} />
+      <HomeTab.Screen name="Profile" component={Profile} />
+    </HomeTab.Navigator>
   );
 }
-function DetailsScreen({ navigation }) {
-  return (
-    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-    <Text>Details Screen</Text>
-    <Button
-    title="Go to Details... again"
-    onPress={() => navigation.push("Details")}
-    />
-    <Button title="Go to Home" onPress={() => navigation.navigate("Home")} />
-    <Button title="Go back" onPress={() => navigation.goBack()} />
-    <Button
-    title="Go back to first screen in stack"
-    onPress={() => navigation.popToTop()}
-    />
-    </View>
-    );
-  }
-
-      <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen
-          name="Home"
-          component={HomeScreen}
-          options={{ title: "Overview" }}
-        />
-        <Stack.Screen name="Details" component={DetailsScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
-  */
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    <View style={styles.container}>
+    <>
       <HeaderBar />
       <NavigationContainer>
         <Stack.Navigator
-          initialRouteName="Calling"
+          initialRouteName="Home"
           screenOptions={{ headerShown: false }}
         >
-          <Stack.Screen name="Calling" component={Calling} />
+          <Stack.Screen name="Home" component={HomeTabs} />
           <Stack.Screen name="OneToOne" component={OneToOneCall} />
           <Stack.Screen name="Group" component={GroupCall} />
         </Stack.Navigator>
       </NavigationContainer>
-      <BottomBar />
-      <StatusBar style="auto" />
-    </View>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#ff0000",
   },
 });
