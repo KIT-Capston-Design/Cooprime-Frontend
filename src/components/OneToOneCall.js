@@ -42,13 +42,23 @@ export default function OneToOneCall({ navigation }) {
   };
 
   useEffect(() => {
-    // Socket Code
 
-    socket.on("welcome", async () => {
-      const offer = await myPeerConnection.createOffer();
-      myPeerConnection.setLocalDescription(offer);
-      console.log("sent the offer");
-      socket.emit("offer", offer, roomName);
+    connectPeer();
+
+    // Socket Code
+    socket.on("matched", (roomName) => {
+      //룸네임이 본인의 아이디로 시작하면 본인이 시그널링 주도
+      if (roomName.match(new RegExp(`^${socket.id}`))) {
+        // 방장 역할
+        console.log("나는 방장입니다.");
+        const offer = await myPeerConnection.createOffer();
+        myPeerConnection.setLocalDescription(offer);
+        console.log("sent the offer");
+        socket.emit("offer", offer, roomName);
+      } else {
+        // 방장이 아닌 역할
+        console.log("나는 방장이 아닙니다.");
+      }
     });
 
     socket.on("offer", async (offer) => {
@@ -74,13 +84,22 @@ export default function OneToOneCall({ navigation }) {
     initCall();
   }
     , []);
+  const connectPeer = async () => {
+    try {
+      console.log("inside connectPeer method");
 
-  async function initCall() {
+      const socket = io(URL);
+      socket.emit("random_one_to_one");
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  const initCall = async () => {
     await getCamera();
     getMedia();
   }
 
-  async function getCamera() {
+  const getCamera = async () => {
     let isFront = false;
     const devices = await mediaDevices.enumerateDevices();
     const camera = devices.filter((device) => device.kind === "videoinput" && device.facing === (isFront ? 'front' : 'environment'));
@@ -88,7 +107,7 @@ export default function OneToOneCall({ navigation }) {
     // videoSourceId = sourceInfo.deviceId;
   }
 
-  async function getMedia(deviceId) {
+  const getMedia = async (deviceId) => {
     const myStream = await mediaDevices
       .getUserMedia({
         audio: true,
