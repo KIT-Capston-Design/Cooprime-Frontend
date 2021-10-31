@@ -12,7 +12,7 @@ import {
   mediaDevices,
   registerGlobals,
 } from "react-native-webrtc";
-const socket = io("http://hyunjin339.iptime.org:3000", {
+const socket = io("http://kitcapstone.codns.com:3000", {
   cors: { origin: "*" },
 });
 
@@ -46,6 +46,9 @@ export default function OneToOneCall({ navigation }) {
   };
 
   useEffect(() => {
+    // Start Call
+    initCall();
+
     // Socket Code
     socket.on("matched", async roomName => {
       //룸네임이 본인의 아이디로 시작하면 본인이 시그널링 주도
@@ -65,12 +68,9 @@ export default function OneToOneCall({ navigation }) {
 
     socket.on("offer", async offer => {
       console.log("received the offer");
-      console.log("1");
       await myPeerConnection.setRemoteDescription(
         new RTCSessionDescription(offer)
       );
-
-      console.log("2");
 
       const answer = await myPeerConnection.createAnswer();
       console.log(answer);
@@ -91,9 +91,6 @@ export default function OneToOneCall({ navigation }) {
       console.log("received candidate");
       myPeerConnection.addIceCandidate(ice);
     });
-
-    // getUserMedia + addStream
-    initCall();
 
     // RTC Code
     myPeerConnection.onicecandidate = data => {
@@ -154,7 +151,7 @@ export default function OneToOneCall({ navigation }) {
         // optional: videoSourceId ? [{ sourceId: videoSourceId }] : [],
       },
     });
-    console.log("mystream");
+    console.log("get mystream");
     // Got stream!
     setLocalStream(myStream);
 
