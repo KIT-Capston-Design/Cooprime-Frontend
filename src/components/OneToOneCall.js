@@ -70,31 +70,23 @@ export default function OneToOneCall({ navigation }) {
       myPeerConnection.addIceCandidate(ice);
     });
 
-    getCameras();
     // getUserMedia + addStream
-
+    initCall();
   }
     , []);
 
-  async function getCameras() {
+  async function initCall() {
+    await getCamera();
+    getMedia();
+  }
+
+  async function getCamera() {
     let isFront = false;
     const devices = await mediaDevices.enumerateDevices();
     const camera = devices.filter((device) => device.kind === "videoinput" && device.facing === (isFront ? 'front' : 'environment'));
     console.log(camera);
     // videoSourceId = sourceInfo.deviceId;
   }
-
-
-  //     .then(stream => {
-  //       // Got stream!
-  //       setLocalStream(stream);
-
-  //       // setup stream listening
-  //       yourConn.addStream(stream);
-  //     })
-  //     .catch(error => {
-  //       // Log error
-  //     });
 
   async function getMedia(deviceId) {
     const myStream = await mediaDevices
