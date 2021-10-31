@@ -144,14 +144,15 @@ export default function OneToOneCall({ navigation }) {
       <View style={styles.videoContainer}>
         <View style={styles.localVideos}>
           <Text>My Video</Text>
-          {/* 아래의 View를 RTCView로 변경해야함 */}
-          <View style={styles.localVideo}></View>
+          <RTCView streamURL={localStream.toURL()} style={styles.localVideo} />
         </View>
 
         <View style={styles.remoteVideos}>
           <Text>Friends Video</Text>
-          {/* 아래의 View를 RTCView로 변경해야함 */}
-          <View style={styles.remoteVideo}></View>
+          <RTCView
+            streamURL={remoteStream.toURL()}
+            style={styles.remoteVideo}
+          />
         </View>
 
         <View style={styles.callSetting}>
