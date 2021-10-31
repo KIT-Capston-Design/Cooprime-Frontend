@@ -1,29 +1,32 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import OneToOneCalling from "./OneToOneCall";
+import OneToOneCall from "./OneToOneCall";
+import GroupCall from "./GroupCall";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-export default function Calling() {
-  const startGroupCall = () => {
-    console.log("start group call");
+const Stack = createNativeStackNavigator();
+
+export default function Calling({ navigation }) {
+  const startOneToOneCall = () => {
+    // 일대일 통화 시작
+    navigation.navigate("OneToOne"); // 일대일 통화 페이지로 이동
   };
 
-  const startJustTwo = () => {
-    console.log("start just two1");
+  const startGroupCall = () => {
+    // 그룹 통화 시작
+    navigation.navigate("Group"); // 그룹 통화 페이지로 이동
   };
 
   return (
     <View style={styles.container}>
-      <OneToOneCalling />
-      {/* <TouchableOpacity style={styles.justTwo} onPress={() => startJustTwo()}>
+      <TouchableOpacity style={styles.justTwo} onPress={startOneToOneCall}>
         <Text>Just Two</Text>
       </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.groupCall}
-        onPress={() => startGroupCall()}
-      >
+      <TouchableOpacity style={styles.groupCall} onPress={startGroupCall}>
         <Text>Group Call</Text>
-      </TouchableOpacity> */}
+      </TouchableOpacity>
     </View>
   );
 }

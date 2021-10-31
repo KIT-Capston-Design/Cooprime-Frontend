@@ -1,11 +1,10 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 
-export default function Header() {
+export default function HeaderBar() {
   return (
     <View style={styles.container}>
-      <Text>Header</Text>
-      <Text>Header</Text>
+      <Text>HeaderBar</Text>
     </View>
   );
 }
@@ -15,7 +14,5 @@ const styles = StyleSheet.create({
     flex: 0.1,
     fontSize: 50,
     backgroundColor: "#00ff00",
-    // alignItems: "center",
-    // justifyContent: "center",
   },
 });

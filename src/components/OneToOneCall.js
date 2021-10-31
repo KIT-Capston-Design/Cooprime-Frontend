@@ -1,25 +1,8 @@
-import React from "react";
-import {
-  View,
-  StyleSheet,
-  Text,
-  Pressable,
-  TouchableOpacity,
-  Alert,
-} from "react-native";
-import {
-  RTCPeerConnection,
-  RTCIceCandidate,
-  RTCSessionDescription,
-  RTCView,
-  MediaStream,
-  MediaStreamTrack,
-  mediaDevices,
-  registerGlobals,
-} from "react-native-webrtc";
+import React, { useEffect } from "react";
+import { View, StyleSheet, Text, TouchableOpacity, Alert } from "react-native";
 import { Feather, Octicons } from "@expo/vector-icons";
 
-export default function OneToOneCalling() {
+export default function OneToOneCall({ navigation }) {
   const iconSize = 30;
   const muteSound = () => {
     Alert.alert("mute sound?", "Are you sure?", [
@@ -40,13 +23,20 @@ export default function OneToOneCalling() {
     ]);
   };
   const disconnect = () => {
-    Alert.alert("disconnect?", "Are you sure?", [
-      { text: "Cancel" },
-      {
-        text: "I'm Sure",
-        style: "destructive",
-      },
-    ]);
+    /* 피어간 연결 종료 로직 */
+
+    navigation.navigate("Calling");
+    console.log("disconnect");
+  };
+  useEffect(() => {
+    connectPeer();
+  }, []);
+  const connectPeer = async () => {
+    try {
+      console.log("inside connectPeer method");
+    } catch (e) {
+      console.log(e);
+    }
   };
   return (
     <View style={styles.container}>
@@ -62,6 +52,7 @@ export default function OneToOneCalling() {
           {/* 아래의 View를 RTCView로 변경해야함 */}
           <View style={styles.remoteVideo}></View>
         </View>
+
         <View style={styles.callSetting}>
           <TouchableOpacity style={styles.muteBtn} onPress={muteSound}>
             <Octicons name="mute" size={iconSize} color="black" />
@@ -97,7 +88,7 @@ const styles = StyleSheet.create({
     height: "20%",
     width: "25%",
     marginBottom: 10,
-    backgroundColor: "#000000",
+    backgroundColor: "#aaaaaa",
     zIndex: 1,
   },
   remoteVideos: {
