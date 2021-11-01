@@ -27,6 +27,7 @@ export default function OneToOneCall({ navigation }) {
 	const [isFront, setIsFront] = useState(false);
 	const [room, setRoom] = useState();
 	let socket;
+
 	const [myPeerConnection, setMyPeerConnection] = useState(
 		//change the config as you need
 		new RTCPeerConnection({
@@ -44,28 +45,35 @@ export default function OneToOneCall({ navigation }) {
 		})
 	);
 
-	const disconnect = () => {
-		/* 피어간 연결 종료 로직 */
-		navigation.navigate("Calling");
-		console.log("socket disconnect");
-		if (socket !== undefined) {
-			// null 체크
-			socket.disconnect();
-		}
-	};
-
 	useEffect(async () => {
-		// Start Call
-		const tempSocket = await io(SERVER_DOMAIN + SERVER_PORT, {
-			cors: { origin: "*" },
-		});
-		socket = tempSocket;
-		console.log("socket in useEffect: ", socket);
+		console.log("userEffect");
 
-		initCall();
+		await initSocket();
+		await initCall();
 
 		console.log("End initCall method");
 		console.log("matched start");
+
+		// RTC Code
+		myPeerConnection.onicecandidate = (data) => {
+			console.log("sent candidate");
+			socket.emit("ice", data.candidate, room);
+		};
+
+		myPeerConnection.onaddstream = (data) => {
+			console.log("On Add Stream");
+			setRemoteStream(data.stream);
+		};
+	}, []);
+
+	const initSocket = async () => {
+		console.log("initSocket");
+
+		// 서버 연결
+		socket = await io(SERVER_DOMAIN + ":" + SERVER_PORT, {
+			cors: { origin: "*" },
+		});
+
 		// Socket Code
 		socket.on("matched", async (roomName) => {
 			//룸네임이 본인의 아이디로 시작하면 본인이 시그널링 주도
@@ -108,38 +116,21 @@ export default function OneToOneCall({ navigation }) {
 			console.log("received candidate");
 			myPeerConnection.addIceCandidate(ice);
 		});
-
-		// RTC Code
-		myPeerConnection.onicecandidate = (data) => {
-			console.log("sent candidate");
-			socket.emit("ice", data.candidate, room);
-		};
-
-		myPeerConnection.onaddstream = (data) => {
-			console.log("On Add Stream");
-			setRemoteStream(data.stream);
-		};
-	}, []);
-
-	const connectPeer = () => {
-		console.log("welcome");
-		try {
-			console.log("connectPeer method Start");
-
-			socket.emit("random_one_to_one");
-		} catch (e) {
-			console.log(e);
-		}
 	};
 
 	const initCall = async () => {
-		console.log("initcall");
-		// console.log("testNum: ", testNum);
-		console.log("socket: ", socket);
+		console.log("initCall");
+
+		socket.emit("random_one_to_one");
+		console.log("sent random_one_to_one");
 
 		await getMedia();
-		await getCamera();
+		//await getCamera();
 		connectPeer();
+	};
+
+	const connectPeer = () => {
+		console.log("connectPeer");
 	};
 
 	const getCamera = async () => {
@@ -177,6 +168,18 @@ export default function OneToOneCall({ navigation }) {
 
 		// setup stream listening
 		myPeerConnection.addStream(myStream);
+	};
+
+	const disconnect = () => {
+		/* 피어간 연결 종료 로직 */
+		console.log("socket disconnect");
+
+		if (socket !== undefined) {
+			// null 체크
+			socket.disconnect();
+		}
+
+		navigation.navigate("Calling");
 	};
 
 	return (
