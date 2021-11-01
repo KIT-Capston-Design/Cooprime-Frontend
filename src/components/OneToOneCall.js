@@ -89,7 +89,7 @@ export default function OneToOneCall({ navigation }) {
 			} else {
 				// 방장이 아닌 역할
 				console.log("나는 방장이 아닙니다.");
-				setRoomName(roomName);
+				this.roomName = roomName;
 			}
 		});
 
