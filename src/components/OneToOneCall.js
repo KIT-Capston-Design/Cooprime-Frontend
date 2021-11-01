@@ -208,44 +208,16 @@ export default function OneToOneCall({ navigation }) {
 	};
 
 	return (
-		// <View style={styles.container}>
-		// 	<View style={styles.videoContainer}>
-		// 		<View style={styles.localVideos}>
-		// 			<Text>My Video</Text>
-		// 			<RTCView streamURL={localStream.toURL()} style={styles.localVideo} />
-		// 		</View>
-		// 		<View style={styles.remoteVideos}>
-		// 			<Text>Friends Video</Text>
-		// 			{/* remote */}
-		// 			<RTCView
-		// 				streamURL={remoteStream.toURL()}
-		// 				style={styles.remoteVideo}
-		// 			/>
-		// 		</View>
-		// 	</View>
-		// 	<View style={styles.callSetting}>
-		// 		<TouchableOpacity style={styles.muteBtn}>
-		// 			<Octicons name="mute" size={iconSize} color="black" />
-		// 		</TouchableOpacity>
-		// 		<TouchableOpacity style={styles.videoOffBtn}>
-		// 			<Feather name="video" size={iconSize} color="black" />
-		// 		</TouchableOpacity>
-		// 		<TouchableOpacity
-		// 			style={styles.disconnectBtn}
-		// 			onPress={handleDisconnectBtn}
-		// 		>
-		// 			<Feather name="x-circle" size={iconSize} color="black" />
-		// 		</TouchableOpacity>
-		// 	</View>
-		// </View>
 		<View style={styles.container}>
 			<View style={styles.videoContainer}>
-				<View style={styles.localVideos}>
-					<RTCView streamURL={localStream.toURL()} />
-				</View>
 				<View style={styles.remoteVideos}>
-					{/* remote */}
-					<RTCView streamURL={remoteStream.toURL()} />
+					<RTCView
+						streamURL={remoteStream.toURL()}
+						style={styles.remoteVideo}
+					/>
+				</View>
+				<View style={styles.localVideos}>
+					<RTCView streamURL={localStream.toURL()} style={styles.localVideo} />
 				</View>
 			</View>
 			<View style={styles.callSetting}>
@@ -272,12 +244,104 @@ export default function OneToOneCall({ navigation }) {
 				</TouchableOpacity>
 			</View>
 		</View>
+		// <View style={styles.container}>
+		// 	<View style={styles.videoContainer}>
+		// 		<View style={styles.localVideos}>
+		// 			<Text>My Video</Text>
+		// 			<RTCView streamURL={localStream.toURL()} style={styles.localVideo} />
+		// 		</View>
+		// 		<View style={styles.remoteVideos}>
+		// 			<Text>Friends Video</Text>
+		// 			{/* remote */}
+		// 			<RTCView
+		// 				streamURL={remoteStream.toURL()}
+		// 				style={styles.remoteVideo}
+		// 			/>
+		// 		</View>
+		// 	</View>
+		// 	<View style={styles.callSetting}>
+		// 		<TouchableOpacity onPress={toggleMic}>
+		// 			<MaterialCommunityIcons
+		// 				name={onMic ? "volume-mute" : "volume-source"}
+		// 				size={iconSize}
+		// 				color={onMic ? "grey" : "black"}
+		// 			/>
+		// 		</TouchableOpacity>
+		// 		<TouchableOpacity onPress={toggleVideo}>
+		// 			<MaterialIcons
+		// 				name={onVideo ? "videocam" : "videocam-off"}
+		// 				size={iconSize}
+		// 				color={onVideo ? "#05ff05" : "red"}
+		// 			/>
+		// 		</TouchableOpacity>
+		// 		<TouchableOpacity onPress={handleDisconnectBtn}>
+		// 			<MaterialCommunityIcons
+		// 				name="phone-off"
+		// 				size={iconSize}
+		// 				color="red"
+		// 			/>
+		// 		</TouchableOpacity>
+		// 	</View>
+		// </View>
 	);
 }
+
 const styles = StyleSheet.create({
+	// container: {
+	// 	flex: 1,
+	// 	backgroundColor: "#ffff00",
+	// 	alignItems: "center",
+	// 	justifyContent: "center",
+	// 	// flexDirection: "row",
+	// 	zIndex: -2,
+	// },
+	// videoContainer: {
+	// 	flex: 1,
+	// 	position: "relative",
+	// 	zIndex: -2,
+	// },
+	// localVideos: {
+	// 	flex: 1,
+	// 	bottom: 0,
+	// 	right: 0,
+	// 	position: "absolute",
+	// 	// alignItems: "center",
+	// 	overflow: "hidden",
+	// 	borderRadius: 6,
+	// 	height: "20%",
+	// 	width: "25%",
+	// 	backgroundColor: "#ffffff",
+	// 	zIndex: -2,
+	// 	borderColor: "#aaaaaa",
+	// 	borderWidth: 0.7,
+	// },
+	// remoteVideos: {
+	// 	width: "100%",
+	// 	flex: 1,
+	// 	position: "relative",
+	// 	// alignItems: "center",
+	// 	overflow: "hidden",
+	// 	borderRadius: 6,
+	// 	zIndex: -2,
+	// 	height: 400,
+	// 	backgroundColor: "#ffffff",
+	// },
+	// localVideo: {
+	// 	height: "100%",
+	// 	width: "100%",
+	// 	zIndex: 1,
+	// },
+	// remoteVideo: {
+	// 	height: "100%",
+	// 	width: "100%",
+	// 	zIndex: -1,
+	// },
 	container: {
 		flex: 1,
 		backgroundColor: "#ffff00",
+		// alignItems: "center",
+		// justifyContent: "center",
+		// flexDirection: "row",
 	},
 	videoContainer: {
 		flex: 1,
@@ -288,35 +352,36 @@ const styles = StyleSheet.create({
 		bottom: 0,
 		right: 0,
 		position: "absolute",
-		alignItems: "center",
 		overflow: "hidden",
 		borderRadius: 6,
 		height: "20%",
 		width: "25%",
-		backgroundColor: "#ffffff",
+		// marginBottom: 10,
+		backgroundColor: "#aaaaaa",
 		zIndex: 1,
-		borderColor: "#aaaaaa",
-		borderWidth: 0.7,
 	},
 	remoteVideos: {
 		width: "100%",
 		flex: 1,
 		position: "relative",
-		alignItems: "center",
 		overflow: "hidden",
 		borderRadius: 6,
 		height: 400,
-		backgroundColor: "#ffffff",
+		// borderColor: "#111111",
+		// borderWidth: 4,
 	},
 	localVideo: {
 		height: "100%",
 		width: "100%",
 		backgroundColor: "#009999",
+		zIndex: 10,
 	},
 	remoteVideo: {
+		// flex: 1,
 		height: "100%",
 		width: "100%",
-		backgroundColor: "#ff0000",
+		backgroundColor: "#000000",
+		zIndex: -1,
 	},
 	callSetting: {
 		backgroundColor: "#fff0ff",
