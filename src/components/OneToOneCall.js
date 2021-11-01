@@ -13,6 +13,13 @@ import {
 	registerGlobals,
 } from "react-native-webrtc";
 
+// 서버 : "http://kitcapstone.codns.com"
+// PC  : "http://localhost"
+// 로컬 : "http://192.168.0.9"
+
+const SERVER_DOMAIN = "http://192.168.0.9";
+const SERVER_PORT = "3000";
+
 export default function OneToOneCall({ navigation }) {
 	const iconSize = 30;
 	const [localStream, setLocalStream] = useState({ toURL: () => null });
@@ -49,7 +56,7 @@ export default function OneToOneCall({ navigation }) {
 
 	useEffect(async () => {
 		// Start Call
-		const tempSocket = await io("http://kitcapstone.codns.com:3000", {
+		const tempSocket = await io(SERVER_DOMAIN + SERVER_PORT, {
 			cors: { origin: "*" },
 		});
 		socket = tempSocket;
