@@ -9,50 +9,56 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 const Stack = createNativeStackNavigator();
 
 export default function Calling({ navigation }) {
-  const startOneToOneCall = () => {
-    // 일대일 통화 시작
-    navigation.navigate("OneToOne"); // 일대일 통화 페이지로 이동
-  };
+	const startOneToOneCall = () => {
+		// 일대일 통화 시작
+		navigation.navigate("OneToOne"); // 일대일 통화 페이지로 이동
+	};
 
-  const startGroupCall = () => {
-    // 그룹 통화 시작
-    navigation.navigate("Group"); // 그룹 통화 페이지로 이동
-  };
+	const startGroupCall = () => {
+		// 그룹 통화 시작
+		navigation.navigate("Group"); // 그룹 통화 페이지로 이동
+	};
 
-  return (
-    <View style={styles.container}>
-      <TouchableOpacity style={styles.justTwo} onPress={startOneToOneCall}>
-        <Text>Just Two</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.groupCall} onPress={startGroupCall}>
-        <Text>Group Call</Text>
-      </TouchableOpacity>
-    </View>
-  );
+	return (
+		<View style={styles.container}>
+			<TouchableOpacity style={styles.oneToOne} onPress={startOneToOneCall}>
+				<Text>Just Two</Text>
+			</TouchableOpacity>
+			<TouchableOpacity style={styles.groupCall} onPress={startGroupCall}>
+				<Text>Group Call</Text>
+			</TouchableOpacity>
+		</View>
+	);
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#eeeeee",
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "row",
-  },
-  justTwo: {
-    width: 150,
-    height: 300,
-    borderRadius: 40,
-    backgroundColor: "#ff0000",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  groupCall: {
-    width: 105,
-    height: 210,
-    borderRadius: 150,
-    backgroundColor: "#ff00ff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
+	container: {
+		flex: 1,
+		backgroundColor: "#eeeeee",
+		alignItems: "center",
+		justifyContent: "center",
+		flexDirection: "row",
+	},
+	oneToOne: {
+		width: 150,
+		height: 300,
+		borderRadius: 40,
+		backgroundColor: "#fedcba",
+		alignItems: "center",
+		justifyContent: "center",
+		margin: 10,
+	},
+	groupCall: {
+		width: 150,
+		height: 300,
+		borderRadius: 40,
+		backgroundColor: "#abcdef",
+		alignItems: "center",
+		justifyContent: "center",
+		margin: 10,
+	},
+	innerText: {
+		fontSize: 20,
+		fontWeight: "bold",
+	},
 });

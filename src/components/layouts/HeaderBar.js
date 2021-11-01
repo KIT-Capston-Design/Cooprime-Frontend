@@ -9,41 +9,40 @@ const height = Dimensions.get("window").height;
 const width = Dimensions.get("window").width;
 
 export default function HeaderBar() {
-  const [isReady, setIsReady] = useState(false);
+	const [isReady, setIsReady] = useState(false);
 
-  const LoadFonts = async () => {
-    await useFonts();
-  };
+	const LoadFonts = async () => {
+		await useFonts();
+	};
 
-  if (!isReady) {
-    return (
-      <AppLoading
-        startAsync={LoadFonts}
-        onFinish={() => setIsReady(true)}
-        onError={() => {}}
-      />
-    );
-  }
+	if (!isReady) {
+		return (
+			<AppLoading
+				startAsync={LoadFonts}
+				onFinish={() => setIsReady(true)}
+				onError={() => {}}
+			/>
+		);
+	}
 
-  return (
-    <View style={styles.container}>
-      <Text style={styles.headerText}>Coprime</Text>
-    </View>
-  );
+	return (
+		<View style={styles.container}>
+			<Text style={styles.headerText}>Coprime</Text>
+		</View>
+	);
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 0.15,
-    // backgroundColor: "#00ff00",
-    borderBottomColor: "#aaaaaa",
-    borderBottomWidth: 0.5,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  headerText: {
-    paddingTop: width / 20,
-    fontSize: width / 10,
-    fontFamily: "DancingScript-Bold",
-  },
+	container: {
+		flex: 0.15,
+		borderBottomColor: "#aaaaaa",
+		borderBottomWidth: 0.5,
+		alignItems: "center",
+		justifyContent: "center",
+	},
+	headerText: {
+		paddingTop: width / 20,
+		fontSize: width / 10,
+		fontFamily: "DancingScript-Bold",
+	},
 });

@@ -12,6 +12,8 @@ import {
 	mediaDevices,
 	registerGlobals,
 } from "react-native-webrtc";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 // 서버 : "http://kitcapstone.codns.com"
 // PC  : "http://localhost"
@@ -25,10 +27,12 @@ let socket;
 let realRoomName;
 
 export default function OneToOneCall({ navigation }) {
-	const iconSize = 30;
+	const iconSize = 60;
 	const [localStream, setLocalStream] = useState({ toURL: () => null });
 	const [remoteStream, setRemoteStream] = useState({ toURL: () => null });
 	const [isFront, setIsFront] = useState(false);
+	const [onMic, setOnMic] = useState(false);
+	const [onVideo, setOnVideo] = useState(true);
 
 	const [myPeerConnection, setMyPeerConnection] = useState(
 		//change the config as you need
@@ -46,6 +50,21 @@ export default function OneToOneCall({ navigation }) {
 			],
 		})
 	);
+
+	const toggleMic = () => {
+		setOnMic(!onMic);
+	};
+
+	const toggleVideo = () => {
+		setOnVideo(!onVideo);
+	};
+
+	const disconnect = () => {
+		/* 피어간 연결 종료 로직 */
+		navigation.navigate("Calling");
+		console.log("socket disconnect");
+		// socket.disconnect();
+	};
 
 	useEffect(async () => {
 		console.log("-----------------useEffect----------------");
@@ -180,6 +199,7 @@ export default function OneToOneCall({ navigation }) {
 		if (socket !== undefined && socket !== null && socket.connected) {
 			socket.emit("discon", realRoomName);
 			//socket.disconnect();
+			myPeerConnection.close();
 		} else {
 			console.log("socket is undifined");
 		}
@@ -188,112 +208,122 @@ export default function OneToOneCall({ navigation }) {
 	};
 
 	return (
+		// <View style={styles.container}>
+		// 	<View style={styles.videoContainer}>
+		// 		<View style={styles.localVideos}>
+		// 			<Text>My Video</Text>
+		// 			<RTCView streamURL={localStream.toURL()} style={styles.localVideo} />
+		// 		</View>
+		// 		<View style={styles.remoteVideos}>
+		// 			<Text>Friends Video</Text>
+		// 			{/* remote */}
+		// 			<RTCView
+		// 				streamURL={remoteStream.toURL()}
+		// 				style={styles.remoteVideo}
+		// 			/>
+		// 		</View>
+		// 	</View>
+		// 	<View style={styles.callSetting}>
+		// 		<TouchableOpacity style={styles.muteBtn}>
+		// 			<Octicons name="mute" size={iconSize} color="black" />
+		// 		</TouchableOpacity>
+		// 		<TouchableOpacity style={styles.videoOffBtn}>
+		// 			<Feather name="video" size={iconSize} color="black" />
+		// 		</TouchableOpacity>
+		// 		<TouchableOpacity
+		// 			style={styles.disconnectBtn}
+		// 			onPress={handleDisconnectBtn}
+		// 		>
+		// 			<Feather name="x-circle" size={iconSize} color="black" />
+		// 		</TouchableOpacity>
+		// 	</View>
+		// </View>
 		<View style={styles.container}>
 			<View style={styles.videoContainer}>
 				<View style={styles.localVideos}>
-					<Text>My Video</Text>
-					<RTCView streamURL={localStream.toURL()} style={styles.localVideo} />
+					<RTCView streamURL={localStream.toURL()} />
 				</View>
 				<View style={styles.remoteVideos}>
-					<Text>Friends Video</Text>
 					{/* remote */}
-					<RTCView
-						streamURL={remoteStream.toURL()}
-						style={styles.remoteVideo}
+					<RTCView streamURL={remoteStream.toURL()} />
+				</View>
+			</View>
+			<View style={styles.callSetting}>
+				<TouchableOpacity onPress={toggleMic}>
+					<MaterialCommunityIcons
+						name={onMic ? "volume-mute" : "volume-source"}
+						size={iconSize}
+						color={onMic ? "grey" : "black"}
 					/>
-				</View>
-
-				<View style={styles.callSetting}>
-					<TouchableOpacity style={styles.muteBtn}>
-						<Octicons name="mute" size={iconSize} color="black" />
-					</TouchableOpacity>
-					<TouchableOpacity style={styles.videoOffBtn}>
-						<Feather name="video" size={iconSize} color="black" />
-					</TouchableOpacity>
-					<TouchableOpacity
-						style={styles.disconnectBtn}
-						onPress={handleDisconnectBtn}
-					>
-						<Feather name="x-circle" size={iconSize} color="black" />
-					</TouchableOpacity>
-				</View>
+				</TouchableOpacity>
+				<TouchableOpacity onPress={toggleVideo}>
+					<MaterialIcons
+						name={onVideo ? "videocam" : "videocam-off"}
+						size={iconSize}
+						color={onVideo ? "#05ff05" : "red"}
+					/>
+				</TouchableOpacity>
+				<TouchableOpacity onPress={handleDisconnectBtn}>
+					<MaterialCommunityIcons
+						name="phone-off"
+						size={iconSize}
+						color="red"
+					/>
+				</TouchableOpacity>
 			</View>
 		</View>
 	);
 }
-
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		backgroundColor: "#ffff00",
-		alignItems: "center",
-		justifyContent: "center",
-		flexDirection: "row",
 	},
 	videoContainer: {
 		flex: 1,
+		position: "relative",
 	},
 	localVideos: {
 		flex: 1,
+		bottom: 0,
+		right: 0,
 		position: "absolute",
+		alignItems: "center",
 		overflow: "hidden",
 		borderRadius: 6,
 		height: "20%",
 		width: "25%",
-		marginBottom: 10,
-		backgroundColor: "#aaaaaa",
+		backgroundColor: "#ffffff",
 		zIndex: 1,
+		borderColor: "#aaaaaa",
+		borderWidth: 0.7,
 	},
 	remoteVideos: {
 		width: "100%",
 		flex: 1,
 		position: "relative",
+		alignItems: "center",
 		overflow: "hidden",
 		borderRadius: 6,
 		height: 400,
+		backgroundColor: "#ffffff",
 	},
 	localVideo: {
 		height: "100%",
 		width: "100%",
 		backgroundColor: "#009999",
-		zIndex: 1,
 	},
 	remoteVideo: {
 		height: "100%",
 		width: "100%",
 		backgroundColor: "#ff0000",
-		zIndex: -1,
 	},
 	callSetting: {
-		backgroundColor: "#ff00ff",
-		flex: 0.2,
-		marginTop: 50,
+		backgroundColor: "#fff0ff",
 		flexDirection: "row",
 		justifyContent: "space-between",
-		padding: 15,
+		padding: 20,
+		borderTopColor: "#aaaaaa",
+		borderTopWidth: 0.5,
 	},
-	muteBtn: { backgroundColor: "#ff0000" },
-	videoOffBtn: { backgroundColor: "#00ff00" },
-	disconnectBtn: { backgroundColor: "#0000ff" },
 });
-
-/*
-const muteSound = () => {
-    Alert.alert("mute sound?", "Are you sure?", [
-      { text: "Cancel" },
-      {
-        text: "I'm Sure",
-        style: "destructive",
-      },
-    ]);
-  };
-  const videoOff = () => {
-    Alert.alert("video off?", "Are you sure?", [
-      { text: "Cancel" },
-      {
-        text: "I'm Sure",
-        style: "destructive",
-      },
-    ]);
-  };
-*/
