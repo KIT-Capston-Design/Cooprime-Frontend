@@ -26,7 +26,7 @@ export default function OneToOneCall({ navigation }) {
 	const [localStream, setLocalStream] = useState({ toURL: () => null });
 	const [remoteStream, setRemoteStream] = useState({ toURL: () => null });
 	const [isFront, setIsFront] = useState(false);
-	let roomName;
+	let realRoomName;
 	let socket;
 
 	const [myPeerConnection, setMyPeerConnection] = useState(
@@ -58,7 +58,8 @@ export default function OneToOneCall({ navigation }) {
 		// RTC Code
 		myPeerConnection.onicecandidate = (data) => {
 			console.log("sent candidate");
-			socket.emit("ice", data.candidate, roomName);
+			console.log(realRoomName);
+			socket.emit("ice", data.candidate, realRoomName);
 		};
 
 		myPeerConnection.onaddstream = (data) => {
@@ -77,19 +78,19 @@ export default function OneToOneCall({ navigation }) {
 
 		// Socket Code
 		socket.on("matched", async (roomName) => {
+			realRoomName = roomName;
 			//룸네임이 본인의 아이디로 시작하면 본인이 시그널링 주도
 			if (roomName.match(new RegExp(`^${socket.id}`))) {
 				// 방장 역할
-				this.roomName = roomName;
+
 				console.log("나는 방장입니다.");
 				const offer = await myPeerConnection.createOffer();
 				myPeerConnection.setLocalDescription(offer);
 				console.log("sent the offer");
-				socket.emit("offer", offer, roomName);
+				socket.emit("offer", offer, realRoomName);
 			} else {
 				// 방장이 아닌 역할
 				console.log("나는 방장이 아닙니다.");
-				this.roomName = roomName;
 			}
 		});
 
@@ -102,7 +103,7 @@ export default function OneToOneCall({ navigation }) {
 			const answer = await myPeerConnection.createAnswer();
 			myPeerConnection.setLocalDescription(answer);
 
-			socket.emit("answer", answer, roomName);
+			socket.emit("answer", answer, realRoomName);
 			console.log("sent the answer");
 		});
 
@@ -177,7 +178,7 @@ export default function OneToOneCall({ navigation }) {
 
 		if (socket !== undefined) {
 			console.log("socket is not undifined");
-			socket.emit("disconnect", roomName);
+			socket.emit("disconnect", realRoomName);
 			//socket.disconnect();
 		} else {
 			console.log("socket is undifined");
