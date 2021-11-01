@@ -26,7 +26,7 @@ export default function OneToOneCall({ navigation }) {
 	const [localStream, setLocalStream] = useState({ toURL: () => null });
 	const [remoteStream, setRemoteStream] = useState({ toURL: () => null });
 	const [isFront, setIsFront] = useState(false);
-	const [roomName, setRoomName] = useState();
+	let roomName;
 	let socket;
 
 	const [myPeerConnection, setMyPeerConnection] = useState(
@@ -80,7 +80,7 @@ export default function OneToOneCall({ navigation }) {
 			//룸네임이 본인의 아이디로 시작하면 본인이 시그널링 주도
 			if (roomName.match(new RegExp(`^${socket.id}`))) {
 				// 방장 역할
-				setRoomName(roomName);
+				this.roomName = roomName;
 				console.log("나는 방장입니다.");
 				const offer = await myPeerConnection.createOffer();
 				myPeerConnection.setLocalDescription(offer);
