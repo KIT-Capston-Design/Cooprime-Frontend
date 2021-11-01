@@ -16,6 +16,7 @@ import {
 // 서버 : "http://kitcapstone.codns.com"
 // PC  : "http://localhost"
 // 로컬 : "http://192.168.0.9"
+// 승형PC : "aitta.iptime.org"
 
 const SERVER_DOMAIN = "http://192.168.0.9";
 const SERVER_PORT = "3000";
@@ -25,7 +26,7 @@ export default function OneToOneCall({ navigation }) {
 	const [localStream, setLocalStream] = useState({ toURL: () => null });
 	const [remoteStream, setRemoteStream] = useState({ toURL: () => null });
 	const [isFront, setIsFront] = useState(false);
-	const [room, setRoom] = useState();
+	const [roomName, setRoomName] = useState();
 	let socket;
 
 	const [myPeerConnection, setMyPeerConnection] = useState(
@@ -57,7 +58,7 @@ export default function OneToOneCall({ navigation }) {
 		// RTC Code
 		myPeerConnection.onicecandidate = (data) => {
 			console.log("sent candidate");
-			socket.emit("ice", data.candidate, room);
+			socket.emit("ice", data.candidate, roomName);
 		};
 
 		myPeerConnection.onaddstream = (data) => {
@@ -79,7 +80,7 @@ export default function OneToOneCall({ navigation }) {
 			//룸네임이 본인의 아이디로 시작하면 본인이 시그널링 주도
 			if (roomName.match(new RegExp(`^${socket.id}`))) {
 				// 방장 역할
-				setRoom(roomName);
+				setRoomName(roomName);
 				console.log("나는 방장입니다.");
 				const offer = await myPeerConnection.createOffer();
 				myPeerConnection.setLocalDescription(offer);
@@ -88,6 +89,7 @@ export default function OneToOneCall({ navigation }) {
 			} else {
 				// 방장이 아닌 역할
 				console.log("나는 방장이 아닙니다.");
+				setRoomName(roomName);
 			}
 		});
 
@@ -98,10 +100,9 @@ export default function OneToOneCall({ navigation }) {
 			);
 
 			const answer = await myPeerConnection.createAnswer();
-			console.log(answer);
 			myPeerConnection.setLocalDescription(answer);
 
-			socket.emit("answer", answer, room);
+			socket.emit("answer", answer, roomName);
 			console.log("sent the answer");
 		});
 
@@ -170,13 +171,16 @@ export default function OneToOneCall({ navigation }) {
 		myPeerConnection.addStream(myStream);
 	};
 
-	const disconnect = () => {
+	const handleDisconnectBtn = () => {
 		/* 피어간 연결 종료 로직 */
 		console.log("socket disconnect");
 
 		if (socket !== undefined) {
-			// null 체크
-			socket.disconnect();
+			console.log("socket is not undifined");
+			socket.emit("disconnect", roomName);
+			//socket.disconnect();
+		} else {
+			console.log("socket is undifined");
 		}
 
 		navigation.navigate("Calling");
@@ -205,7 +209,10 @@ export default function OneToOneCall({ navigation }) {
 					<TouchableOpacity style={styles.videoOffBtn}>
 						<Feather name="video" size={iconSize} color="black" />
 					</TouchableOpacity>
-					<TouchableOpacity style={styles.disconnectBtn} onPress={disconnect}>
+					<TouchableOpacity
+						style={styles.disconnectBtn}
+						onPress={handleDisconnectBtn}
+					>
 						<Feather name="x-circle" size={iconSize} color="black" />
 					</TouchableOpacity>
 				</View>
