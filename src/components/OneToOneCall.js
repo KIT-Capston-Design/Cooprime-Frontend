@@ -19,7 +19,7 @@ export default function OneToOneCall({ navigation }) {
 	const [remoteStream, setRemoteStream] = useState({ toURL: () => null });
 	const [isFront, setIsFront] = useState(false);
 	const [room, setRoom] = useState();
-	const [socket, setSocket] = useState();
+	let socket;
 	const [myPeerConnection, setMyPeerConnection] = useState(
 		//change the config as you need
 		new RTCPeerConnection({
@@ -41,19 +41,24 @@ export default function OneToOneCall({ navigation }) {
 		/* 피어간 연결 종료 로직 */
 		navigation.navigate("Calling");
 		console.log("socket disconnect");
-		socket.disconnect();
+		if (socket !== undefined) {
+			// null 체크
+			socket.disconnect();
+		}
 	};
 
 	useEffect(async () => {
 		// Start Call
-		await setSocket(
-			io("http://kitcapstone.codns.com:3000", {
-				cors: { origin: "*" },
-			})
-		);
+		const tempSocket = await io("http://kitcapstone.codns.com:3000", {
+			cors: { origin: "*" },
+		});
+		socket = tempSocket;
+		console.log("socket in useEffect: ", socket);
 
-		initCall(socket);
+		initCall();
 
+		console.log("End initCall method");
+		console.log("matched start");
 		// Socket Code
 		socket.on("matched", async (roomName) => {
 			//룸네임이 본인의 아이디로 시작하면 본인이 시그널링 주도
@@ -109,10 +114,10 @@ export default function OneToOneCall({ navigation }) {
 		};
 	}, []);
 
-	const connectPeer = async (socket) => {
+	const connectPeer = () => {
 		console.log("welcome");
 		try {
-			console.log("inside connectPeer method");
+			console.log("connectPeer method Start");
 
 			socket.emit("random_one_to_one");
 		} catch (e) {
@@ -122,6 +127,9 @@ export default function OneToOneCall({ navigation }) {
 
 	const initCall = async () => {
 		console.log("initcall");
+		// console.log("testNum: ", testNum);
+		console.log("socket: ", socket);
+
 		await getMedia();
 		await getCamera();
 		connectPeer();
@@ -133,11 +141,11 @@ export default function OneToOneCall({ navigation }) {
 		// mediaDevices.enumerateDevices().then(source => {
 		// console.log(source);
 		// });
-		console.log("devices : ", devices);
+		// console.log("devices : ", devices);
 		const camera = devices.filter((device) => {
 			device.kind === "videoinput" && device.facing === "front";
 		});
-		console.log("camera : ", camera);
+		// console.log("camera : ", camera);
 		// videoSourceId = sourceInfo.deviceId;
 	};
 
@@ -156,7 +164,6 @@ export default function OneToOneCall({ navigation }) {
 			},
 		});
 		console.log("get mystream");
-		console.log(myStream);
 
 		// Got stream!room
 		setLocalStream(myStream);
