@@ -20,7 +20,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 // 로컬 : "http://192.168.0.9"
 // 승형PC : "aitta.iptime.org"
 
-const SERVER_DOMAIN = "http://192.168.0.9";
+const SERVER_DOMAIN = "http://123.213.225.243";
 const SERVER_PORT = "3000";
 
 let socket;
